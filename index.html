@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="pt-BR" class="scroll-smooth">
 <head>
-    <!-- Google Tag Manager / Analytics (NOVO - Campanhas) -->
+    <!-- Google Tag Manager / Analytics (Campanhas) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-SDQFQKM5EP"></script>
     <script>
         window.dataLayer = window.dataLayer || [];
@@ -10,7 +10,7 @@
         gtag('config', 'G-SDQFQKM5EP');
     </script>
 
-    <!-- Microsoft Clarity (NOVO - Campanhas) -->
+    <!-- Microsoft Clarity (Campanhas) -->
     <script type="text/javascript">
         (function(c,l,a,r,i,t,y){
             c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
@@ -30,11 +30,11 @@
         s.parentNode.insertBefore(t,s)}(window, document,'script',
         'https://connect.facebook.net/en_US/fbevents.js');
         
-        // ATENÇÃO: SUBSTITUA O NÚMERO ABAIXO PELO SEU PIXEL ID
-        fbq('init', 'COLOQUE_SEU_PIXEL_AQUI'); 
+        // PIXEL INJETADO OFICIALMENTE
+        fbq('init', '1583239787140386'); 
         fbq('track', 'PageView');
     </script>
-    <noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=COLOQUE_SEU_PIXEL_AQUI&ev=PageView&noscript=1"/></noscript>
+    <noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=1583239787140386&ev=PageView&noscript=1"/></noscript>
     <!-- END META PIXEL -->
 
     <meta charset="UTF-8">
@@ -205,7 +205,6 @@
                 Toque nas imagens abaixo para ampliar os arquivos do Kit.
             </p>
 
-            <!-- AJUSTE DOS CAMINHOS PARA OS ARQUIVOS REAIS DO GITHUB -->
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <div>
                     <div class="bg-white rounded-xl aspect-[3/4] overflow-hidden border border-slate-200 mb-2 cursor-pointer hover:ring-2 hover:ring-acs-teal transition-all">
@@ -257,15 +256,30 @@
         </div>
     </section>
 
+    <!-- SEÇÃO DE PROVA SOCIAL COM 3 FOTOS EMPILHADAS -->
     <section class="py-16 px-5 bg-acs-bg border-y border-slate-100 overflow-hidden">
         <div class="max-w-md mx-auto text-center">
             <h2 class="text-3xl font-black text-acs-ink mb-10 tracking-tight">
                 Quem usa, entende a utilidade
             </h2>
-            <!-- IMAGEM DE PROVA SOCIAL COM BLOQUEIO DE SELEÇÃO -->
-            <div class="bg-white p-2 rounded-2xl border border-slate-200 mb-6 shadow-md overflow-hidden">
-                <img src="assets/prova-kit-01.jpg" alt="Prova Social - Kit Operacional" class="w-full h-auto rounded-xl no-select" onerror="this.style.display='none'">
+            
+            <div class="space-y-5 mb-6">
+                <!-- Foto 1 (Original) -->
+                <div class="bg-white p-2 rounded-2xl border border-slate-200 shadow-md overflow-hidden">
+                    <img src="assets/prova-kit-01.jpg" alt="Prova Social - Kit Operacional 1" class="w-full h-auto rounded-xl no-select" onerror="this.style.display='none'">
+                </div>
+
+                <!-- Foto 2 (Nova) -->
+                <div class="bg-white p-2 rounded-2xl border border-slate-200 shadow-md overflow-hidden">
+                    <img src="assets/prova-kit-02.jpg" alt="Prova Social - Kit Operacional 2" class="w-full h-auto rounded-xl no-select" onerror="this.style.display='none'">
+                </div>
+
+                <!-- Foto 3 (Nova) -->
+                <div class="bg-white p-2 rounded-2xl border border-slate-200 shadow-md overflow-hidden">
+                    <img src="assets/prova-kit-03.jpg" alt="Prova Social - Kit Operacional 3" class="w-full h-auto rounded-xl no-select" onerror="this.style.display='none'">
+                </div>
             </div>
+
             <p class="text-sm text-acs-muted font-medium mt-4">
                 Validado por profissionais de campo que precisavam profissionalizar seus rascunhos.
             </p>
