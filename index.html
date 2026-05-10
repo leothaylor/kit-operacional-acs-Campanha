@@ -266,8 +266,8 @@
             <h2 class="text-3xl font-black text-acs-ink mb-10 tracking-tight">
                 Quem usa, entende a utilidade
             </h2>
-            <div class="bg-white p-2 rounded-2xl border border-slate-200 mb-6 shadow-md overflow-hidden">
-                <img src="assets/prova-kit-01.jpg" alt="Prova Social - Kit Operacional" class="w-full h-auto rounded-xl no-select" onerror="this.style.display='none'">
+            <div class="bg-white p-2 rounded-2xl border border-slate-200 mb-6 shadow-md overflow-hidden cursor-pointer hover:ring-2 hover:ring-acs-teal transition-all">
+                <img src="assets/prova-kit-01.jpg" alt="Prova Social - Kit Operacional" class="w-full h-auto rounded-xl expandable-img" onclick="openLightbox(6)" onerror="this.style.display='none'">
             </div>
             <p class="text-sm text-acs-muted font-medium mt-4">
                 Validado por profissionais de campo que precisavam profissionalizar seus rascunhos.
@@ -325,7 +325,7 @@
     <div id="imageModal" class="hidden" onclick="closeLightbox()">
         <div class="relative w-full h-full flex flex-col justify-center items-center p-4">
             <button onclick="closeLightbox()" class="absolute top-6 right-6 text-white bg-slate-800/80 hover:bg-slate-700 p-3 rounded-full font-bold text-xl leading-none shadow-lg z-50">✕</button>
-            <img id="lightboxImg" src="" alt="Visualização" class="max-w-full max-h-[75vh] object-contain rounded-lg shadow-2xl mb-4" onclick="event.stopPropagation()">
+            <img id="lightboxImg" src="" alt="Visualização" class="max-w-full max-h-[75vh] object-contain rounded-lg shadow-2xl mb-4" style="touch-action: none;" onclick="event.stopPropagation()">
             <div class="flex gap-6 mt-4 z-50" onclick="event.stopPropagation()">
                 <button onclick="prevImage(event)" class="bg-acs-teal text-white px-6 py-3 rounded-xl font-bold uppercase text-sm shadow-lg hover:bg-teal-400">Anterior</button>
                 <button onclick="nextImage(event)" class="bg-acs-teal text-white px-6 py-3 rounded-xl font-bold uppercase text-sm shadow-lg hover:bg-teal-400">Próxima</button>
@@ -339,10 +339,67 @@
         const images = document.querySelectorAll('.expandable-img');
         let currentIndex = 0;
         
-        const imageNames = ['Fichas', 'Calendario_ACS', 'Calendario_Equipe', 'Tutorial', 'Uso_Real_1', 'Uso_Real_2'];
+        // 🟢 INJEÇÃO: Prova_Social adicionada ao Tracking Oficial
+        const imageNames = ['Fichas', 'Calendario_ACS', 'Calendario_Equipe', 'Tutorial', 'Uso_Real_1', 'Uso_Real_2', 'Prova_Social'];
 
+        // 🟢 INJEÇÃO: Lógica de Gestos Touch (Pinch-to-Zoom e Arraste)
+        let zoomScale = 1;
+        let isPanning = false;
+        let panX = 0, panY = 0;
+        let startTouchX = 0, startTouchY = 0;
+        let initialDist = 0;
+        let initialZoom = 1;
+
+        lightboxImg.addEventListener('touchstart', (e) => {
+            if (e.touches.length === 2) {
+                e.preventDefault();
+                initialDist = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
+                initialZoom = zoomScale;
+            } else if (e.touches.length === 1 && zoomScale > 1) {
+                e.preventDefault();
+                isPanning = true;
+                startTouchX = e.touches[0].clientX - panX;
+                startTouchY = e.touches[0].clientY - panY;
+            }
+        }, { passive: false });
+
+        lightboxImg.addEventListener('touchmove', (e) => {
+            if (e.touches.length === 2) {
+                e.preventDefault();
+                const currentDist = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
+                zoomScale = initialZoom * (currentDist / initialDist);
+                zoomScale = Math.max(1, Math.min(zoomScale, 4)); // Escala de 1x a 4x
+                applyTransform();
+            } else if (e.touches.length === 1 && isPanning) {
+                e.preventDefault();
+                panX = e.touches[0].clientX - startTouchX;
+                panY = e.touches[0].clientY - startTouchY;
+                applyTransform();
+            }
+        }, { passive: false });
+
+        lightboxImg.addEventListener('touchend', (e) => {
+            if (e.touches.length < 2) isPanning = false;
+            if (e.touches.length === 0 && zoomScale <= 1) resetZoom();
+        });
+
+        function applyTransform() {
+            lightboxImg.style.transform = `translate(${panX}px, ${panY}px) scale(${zoomScale})`;
+            lightboxImg.style.transition = 'none';
+        }
+
+        function resetZoom() {
+            zoomScale = 1;
+            panX = 0;
+            panY = 0;
+            lightboxImg.style.transform = `translate(0px, 0px) scale(1)`;
+            lightboxImg.style.transition = 'transform 0.3s ease-out';
+        }
+
+        // 🟢 Funções base mantidas e integradas com resetZoom
         function openLightbox(index) {
             currentIndex = index;
+            resetZoom();
             lightboxImg.src = images[currentIndex].src;
             modal.classList.add('active');
             document.body.style.overflow = 'hidden';
@@ -355,17 +412,20 @@
         function closeLightbox() {
             modal.classList.remove('active');
             document.body.style.overflow = '';
+            resetZoom();
         }
 
         function nextImage(e) {
             e.stopPropagation();
             currentIndex = (currentIndex + 1) % images.length;
+            resetZoom();
             lightboxImg.src = images[currentIndex].src;
         }
 
         function prevImage(e) {
             e.stopPropagation();
             currentIndex = (currentIndex - 1 + images.length) % images.length;
+            resetZoom();
             lightboxImg.src = images[currentIndex].src;
         }
 
