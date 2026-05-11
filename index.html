@@ -1,6 +1,11 @@
 <!DOCTYPE html>
 <html lang="pt-BR" class="scroll-smooth">
 <head>
+    <link rel="preconnect" href="https://cdn.tailwindcss.com" crossorigin>
+    <link rel="dns-prefetch" href="https://cdn.tailwindcss.com">
+    <link rel="preconnect" href="https://connect.facebook.net" crossorigin>
+    <link rel="preconnect" href="https://www.googletagmanager.com" crossorigin>
+
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-SDQFQKM5EP"></script>
     <script>
         window.dataLayer = window.dataLayer || [];
@@ -32,6 +37,7 @@
         fbq('track', 'PageView');
     </script>
     <noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=1583239787140386&ev=PageView&noscript=1"/></noscript>
+    
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Kit Operacional ACS | Material prático para registro no campo</title>
@@ -339,10 +345,8 @@
         const images = document.querySelectorAll('.expandable-img');
         let currentIndex = 0;
         
-        // 🟢 INJEÇÃO: Prova_Social adicionada ao Tracking Oficial
         const imageNames = ['Fichas', 'Calendario_ACS', 'Calendario_Equipe', 'Tutorial', 'Uso_Real_1', 'Uso_Real_2', 'Prova_Social'];
 
-        // 🟢 INJEÇÃO: Lógica de Gestos Touch (Pinch-to-Zoom e Arraste)
         let zoomScale = 1;
         let isPanning = false;
         let panX = 0, panY = 0;
@@ -368,7 +372,7 @@
                 e.preventDefault();
                 const currentDist = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
                 zoomScale = initialZoom * (currentDist / initialDist);
-                zoomScale = Math.max(1, Math.min(zoomScale, 4)); // Escala de 1x a 4x
+                zoomScale = Math.max(1, Math.min(zoomScale, 4));
                 applyTransform();
             } else if (e.touches.length === 1 && isPanning) {
                 e.preventDefault();
@@ -396,7 +400,6 @@
             lightboxImg.style.transition = 'transform 0.3s ease-out';
         }
 
-        // 🟢 Funções base mantidas e integradas com resetZoom
         function openLightbox(index) {
             currentIndex = index;
             resetZoom();
@@ -429,6 +432,21 @@
             lightboxImg.src = images[currentIndex].src;
         }
 
+        // Script de Injeção de UTMs (Mantido no topo do DOM para agir rápido)
+        (function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const utms = urlParams.toString();
+
+            if (utms) {
+                const links = document.querySelectorAll('a[href*="hotmart.com"]');
+                links.forEach(link => {
+                    let href = link.getAttribute('href');
+                    const separator = href.includes('?') ? '&' : '?';
+                    link.setAttribute('href', href + separator + utms);
+                });
+            }
+        })();
+
         document.addEventListener('DOMContentLoaded', function() {
             
             gtag('event', 'view_item', {
@@ -436,12 +454,26 @@
                 'items': [{'item_id': 'kit_acs', 'item_name': 'Kit Operacional ACS'}]
             });
 
+            // 🟢 RESOLUÇÃO DO RACE CONDITION (FUGA DE DADOS DO PIXEL)
             const ctas = document.querySelectorAll('.cta-button');
             ctas.forEach(cta => {
                 cta.addEventListener('click', function(e) {
+                    e.preventDefault(); // Trava a ida imediata para a Hotmart
                     
+                    const targetUrl = this.getAttribute('href'); // Pega a URL (já com as UTMs injetadas)
                     const posicaoBtn = this.getAttribute('data-position') || 'desconhecido';
                     
+                    let redirectFired = false;
+                    
+                    // Função que executa o redirecionamento final
+                    const executeRedirect = () => {
+                        if (!redirectFired) {
+                            redirectFired = true;
+                            window.location.href = targetUrl;
+                        }
+                    };
+
+                    // Dispara evento pro Meta (Facebook)
                     if(typeof fbq === 'function') {
                         fbq('track', 'InitiateCheckout', {
                             content_name: 'Kit Operacional ACS',
@@ -450,9 +482,14 @@
                         });
                     }
 
+                    // Dispara evento pro Google e avisa quando terminar
                     gtag('event', 'clique_botao_comprar', {
-                        'posicao_botao': posicaoBtn
+                        'posicao_botao': posicaoBtn,
+                        'event_callback': executeRedirect
                     });
+
+                    // Trava de Segurança: Se o Google falhar ou a internet cair, joga pra Hotmart em 400ms de qualquer jeito.
+                    setTimeout(executeRedirect, 400); 
                 });
             });
 
@@ -469,22 +506,6 @@
                 observer.observe(ofertaSection);
             }
         });
-    </script>
-    
-    <script>
-        (function() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const utms = urlParams.toString();
-
-            if (utms) {
-                const links = document.querySelectorAll('a[href*="hotmart.com"]');
-                links.forEach(link => {
-                    let href = link.getAttribute('href');
-                    const separator = href.includes('?') ? '&' : '?';
-                    link.setAttribute('href', href + separator + utms);
-                });
-            }
-        })();
     </script>
 </body>
 </html>
